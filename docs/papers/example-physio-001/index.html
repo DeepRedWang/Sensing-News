@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="auto">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MultiSense: Contactless Multi-Person Vital Sign Monitoring with a Single 60 GHz Radar · Wireless Sensing Paper Digest</title>
+<meta name="description" content="每日整理无线感知（Wireless Sensing）领域的最新论文，覆盖生理感知、定位、成像、安全等子方向。">
+<link rel="stylesheet" href="/Seneing_News/assets/style.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='80' font-size='80'%3E%F0%9F%93%A1%3C/text%3E%3C/svg%3E">
+</head>
+<body>
+<header class="site-header">
+  <div class="wrap header-inner">
+    <a class="brand" href="/Seneing_News/">
+      <span class="brand-icon">📡</span>
+      <span class="brand-text">Wireless Sensing Paper Digest</span>
+    </a>
+    <nav class="nav">
+      <a href="/Seneing_News/">首页</a>
+      
+        <a href="/Seneing_News/categories/physiological/">❤ 生理感知</a>
+      
+        <a href="/Seneing_News/categories/localization/">◎ 定位</a>
+      
+        <a href="/Seneing_News/categories/imaging/">▦ 成像</a>
+      
+        <a href="/Seneing_News/categories/security/">⚿ 安全</a>
+      
+      <a href="/Seneing_News/tags/">标签</a>
+      <a href="/Seneing_News/archive/">归档</a>
+      <a href="/Seneing_News/search/">搜索</a>
+    </nav>
+    <button id="theme-toggle" class="theme-toggle" aria-label="切换主题">◐</button>
+  </div>
+</header>
+
+<main class="wrap site-main">
+  
+<article class="paper-detail">
+  <nav class="crumbs">
+    <a href="/Seneing_News/">首页</a>
+    <span>›</span>
+    <a href="/Seneing_News/categories/physiological/">生理感知</a>
+    <span>›</span>
+    <span class="muted">example-physio-001</span>
+  </nav>
+
+  <h1 class="paper-detail-title">MultiSense: Contactless Multi-Person Vital Sign Monitoring with a Single 60 GHz Radar</h1>
+
+  <div class="paper-meta">
+    <span class="paper-cat cat-physiological">❤ 生理感知</span>
+    <span class="paper-venue">MobiCom 2026</span>
+    <span class="paper-date">2026-05-17</span>
+    <span class="paper-score score-8">8.7</span>
+  </div>
+
+  
+    <p class="authors">Alice Wang, Bob Liu, Carol Chen</p>
+  
+
+  
+    <div class="paper-tags">
+      <a class="tag" href="/Seneing_News/tags/mmwave/">mmWave</a><a class="tag" href="/Seneing_News/tags/radar/">Radar</a><a class="tag" href="/Seneing_News/tags/vital-signs/">Vital Signs</a><a class="tag" href="/Seneing_News/tags/respiration/">Respiration</a><a class="tag" href="/Seneing_News/tags/heart-rate/">Heart Rate</a>
+    </div>
+  
+
+  <div class="paper-links">
+    <a class="link-btn" href="https://arxiv.org/abs/2505.00001" target="_blank" rel="noopener">arXiv</a>
+    
+    
+    
+  </div>
+
+  
+    <div class="callout tldr-callout">
+      <div class="callout-title">TL;DR</div>
+      <p>一台 60 GHz 雷达同时监测 4 人的呼吸/心率，提出 Transformer 联合估计器。</p>
+    </div>
+  
+
+  
+    <section>
+      <h2>关键贡献</h2>
+      <ul class="highlights">
+        <li>首次在 60 GHz 单雷达上实现 4 人并行 vital-sign 估计</li><li>提出 cross-target attention 抑制互调</li><li>公开 25 人多场景数据集</li>
+      </ul>
+    </section>
+  
+
+  
+    <section>
+      <h2>解读</h2>
+      <div class="summary"><p><strong>问题：</strong> 现有雷达生理感知大多假设单人场景，无法处理多人同框；多目标的胸腔位移在时频域上互相干扰。</p>
+<p><strong>方法：</strong> 作者先用距离-多普勒图分离人体目标，再用一个共享 backbone + 多头 Transformer 对每个目标独立估计呼吸/心跳。关键在于引入一个 <em>cross-target</em> 注意力分支抑制互调串扰。</p>
+<p><strong>结果：</strong> 在自采集 25 人多场景数据集上，4 人同时监测时呼吸 MAE = 0.6 bpm，心率 MAE = 2.1 bpm，相比单人 baseline 仅退化约 15%。</p></div>
+    </section>
+  
+
+  
+    <section>
+      <h2>原始摘要</h2>
+      <p class="abstract">Contactless vital-sign monitoring with mmWave radar has shown promise but is limited to a single subject in line-of-sight. We present MultiSense, a 60 GHz radar pipeline that jointly resolves up to 4 people with separation of respiration and heartbeat components via a transformer-based joint estimator.</p>
+    </section>
+  
+</article>
+
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <span>© 2026 Rui Xu</span>
+    <span>· 由 Python 静态生成器自动构建</span>
+    <span>· 共 4 篇 / 2 期</span>
+  </div>
+</footer>
+
+<script src="/Seneing_News/assets/app.js" defer></script>
+</body>
+</html>

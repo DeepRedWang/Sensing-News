@@ -1,0 +1,30 @@
+# 本地原始数据 —— 不上传到 GitHub
+data/
+scripts/
+templates/
+.serve_root/
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+env/
+
+# 编辑器/系统
+.vscode/
+.idea/
+*.swp
+.DS_Store
+Thumbs.db
+
+# 构建日志
+*.log
+build.log
+
+# 显式不忽略的内容
+!docs/
+!docs/**
+!README.md
+!.gitignore

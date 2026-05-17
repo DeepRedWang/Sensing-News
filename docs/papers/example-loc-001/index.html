@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="auto">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>UWB-SLAM: Tightly Coupled UWB-Inertial SLAM for GPS-Denied Environments · Wireless Sensing Paper Digest</title>
+<meta name="description" content="每日整理无线感知（Wireless Sensing）领域的最新论文，覆盖生理感知、定位、成像、安全等子方向。">
+<link rel="stylesheet" href="/Seneing_News/assets/style.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='80' font-size='80'%3E%F0%9F%93%A1%3C/text%3E%3C/svg%3E">
+</head>
+<body>
+<header class="site-header">
+  <div class="wrap header-inner">
+    <a class="brand" href="/Seneing_News/">
+      <span class="brand-icon">📡</span>
+      <span class="brand-text">Wireless Sensing Paper Digest</span>
+    </a>
+    <nav class="nav">
+      <a href="/Seneing_News/">首页</a>
+      
+        <a href="/Seneing_News/categories/physiological/">❤ 生理感知</a>
+      
+        <a href="/Seneing_News/categories/localization/">◎ 定位</a>
+      
+        <a href="/Seneing_News/categories/imaging/">▦ 成像</a>
+      
+        <a href="/Seneing_News/categories/security/">⚿ 安全</a>
+      
+      <a href="/Seneing_News/tags/">标签</a>
+      <a href="/Seneing_News/archive/">归档</a>
+      <a href="/Seneing_News/search/">搜索</a>
+    </nav>
+    <button id="theme-toggle" class="theme-toggle" aria-label="切换主题">◐</button>
+  </div>
+</header>
+
+<main class="wrap site-main">
+  
+<article class="paper-detail">
+  <nav class="crumbs">
+    <a href="/Seneing_News/">首页</a>
+    <span>›</span>
+    <a href="/Seneing_News/categories/localization/">定位</a>
+    <span>›</span>
+    <span class="muted">example-loc-001</span>
+  </nav>
+
+  <h1 class="paper-detail-title">UWB-SLAM: Tightly Coupled UWB-Inertial SLAM for GPS-Denied Environments</h1>
+
+  <div class="paper-meta">
+    <span class="paper-cat cat-localization">◎ 定位</span>
+    <span class="paper-venue">IPSN 2026</span>
+    <span class="paper-date">2026-05-17</span>
+    <span class="paper-score score-7">7.9</span>
+  </div>
+
+  
+    <p class="authors">David Smith, Eve Johnson</p>
+  
+
+  
+    <div class="paper-tags">
+      <a class="tag" href="/Seneing_News/tags/uwb/">UWB</a><a class="tag" href="/Seneing_News/tags/slam/">SLAM</a><a class="tag" href="/Seneing_News/tags/indoor-localization/">Indoor Localization</a><a class="tag" href="/Seneing_News/tags/imu/">IMU</a>
+    </div>
+  
+
+  <div class="paper-links">
+    <a class="link-btn" href="https://arxiv.org/abs/2505.00010" target="_blank" rel="noopener">arXiv</a>
+    
+    <a class="link-btn" href="https://github.com/example/uwb-slam" target="_blank" rel="noopener">Code</a>
+    
+  </div>
+
+  
+    <div class="callout tldr-callout">
+      <div class="callout-title">TL;DR</div>
+      <p>UWB+IMU 紧耦合因子图 SLAM，稀疏锚点下也鲁棒。</p>
+    </div>
+  
+
+  
+    <section>
+      <h2>关键贡献</h2>
+      <ul class="highlights">
+        <li>稀疏 anchor 下仍可定位</li><li>完全开源的工厂级测试集</li><li>实时性 50 Hz 以上</li>
+      </ul>
+    </section>
+  
+
+  
+    <section>
+      <h2>解读</h2>
+      <div class="summary"><p><strong>贡献：</strong> 在稀疏 anchor（≤3 个）情况下传统 trilateration 失效。作者引入 IMU 预积分约束，并通过滑动窗优化解决 anchor 不可观条件下的初始化问题。</p>
+<p><strong>实验：</strong> 在 800 m² 仓库环境下，3 个 anchor 时定位 RMSE 12 cm，相比 EKF baseline 提升 40%。</p></div>
+    </section>
+  
+
+  
+    <section>
+      <h2>原始摘要</h2>
+      <p class="abstract">We propose UWB-SLAM, a tightly coupled factor-graph framework fusing UWB ranges with IMU pre-integration for robust localization in GPS-denied environments with sparse anchors.</p>
+    </section>
+  
+</article>
+
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <span>© 2026 Rui Xu</span>
+    <span>· 由 Python 静态生成器自动构建</span>
+    <span>· 共 4 篇 / 2 期</span>
+  </div>
+</footer>
+
+<script src="/Seneing_News/assets/app.js" defer></script>
+</body>
+</html>
