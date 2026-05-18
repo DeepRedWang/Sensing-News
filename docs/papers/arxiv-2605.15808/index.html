@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="auto">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Joint Mobile User Positioning and Passive Target Sensing using Optimized Sequential Beamforming · Wireless Sensing Paper Digest</title>
+<meta name="description" content="每日整理无线感知（Wireless Sensing）领域的最新论文，覆盖生理感知、定位、成像、安全等子方向。">
+<link rel="stylesheet" href="/Sensing-News/assets/style.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='80' font-size='80'%3E%F0%9F%93%A1%3C/text%3E%3C/svg%3E">
+</head>
+<body>
+<header class="site-header">
+  <div class="wrap header-inner">
+    <a class="brand" href="/Sensing-News/">
+      <span class="brand-icon">📡</span>
+      <span class="brand-text">Wireless Sensing Paper Digest</span>
+    </a>
+    <nav class="nav">
+      <a href="/Sensing-News/">首页</a>
+      
+        <a href="/Sensing-News/categories/physiological/">❤ 生理感知</a>
+      
+        <a href="/Sensing-News/categories/localization/">◎ 定位</a>
+      
+        <a href="/Sensing-News/categories/imaging/">▦ 成像</a>
+      
+        <a href="/Sensing-News/categories/security/">⚿ 安全</a>
+      
+      <a href="/Sensing-News/tags/">标签</a>
+      <a href="/Sensing-News/archive/">归档</a>
+      <a href="/Sensing-News/search/">搜索</a>
+    </nav>
+    <button id="theme-toggle" class="theme-toggle" aria-label="切换主题">◐</button>
+  </div>
+</header>
+
+<main class="wrap site-main">
+  
+<article class="paper-detail">
+  <nav class="crumbs">
+    <a href="/Sensing-News/">首页</a>
+    <span>›</span>
+    <a href="/Sensing-News/categories/localization/">定位</a>
+    <span>›</span>
+    <span class="muted">arxiv-2605.15808</span>
+  </nav>
+
+  <h1 class="paper-detail-title">Joint Mobile User Positioning and Passive Target Sensing using Optimized Sequential Beamforming</h1>
+
+  <div class="paper-meta">
+    <span class="paper-cat cat-localization">◎ 定位</span>
+    <span class="paper-venue">arXiv 2605.15808</span>
+    <span class="paper-date">2026-05-18</span>
+    <span class="paper-score score-7">7.0</span>
+  </div>
+
+  
+
+  
+    <div class="paper-tags">
+      <a class="tag" href="/Sensing-News/tags/isac/">ISAC</a><a class="tag" href="/Sensing-News/tags/beamforming/">Beamforming</a><a class="tag" href="/Sensing-News/tags/positioning/">Positioning</a><a class="tag" href="/Sensing-News/tags/cramer-rao-bound/">Cramer-Rao Bound</a><a class="tag" href="/Sensing-News/tags/bayesian-optimization/">Bayesian Optimization</a><a class="tag" href="/Sensing-News/tags/mobile/">Mobile</a>
+    </div>
+  
+
+  <div class="paper-links">
+    <a class="link-btn" href="https://arxiv.org/abs/2605.15808" target="_blank" rel="noopener">arXiv</a>
+    <a class="link-btn" href="https://arxiv.org/pdf/2605.15808.pdf" target="_blank" rel="noopener">PDF</a>
+    
+    
+  </div>
+
+  
+    <div class="callout tldr-callout">
+      <div class="callout-title">TL;DR</div>
+      <p>针对移动用户的 ISAC 序贯波束赋形：先做单基地感知建立先验，再用于双基地定位，cm 级精度。</p>
+    </div>
+  
+
+  
+    <section>
+      <h2>关键贡献</h2>
+      <ul class="highlights">
+        <li>首个把用户移动性显式纳入 ISAC 序贯优化的框架</li><li>位置域 CRB + 贝叶斯先验传递的解析公式</li><li>共享波束赋形器全局优化优于两阶段贪心</li>
+      </ul>
+    </section>
+  
+
+  
+    <section>
+      <h2>解读</h2>
+      <div class="summary"><p><strong>问题：</strong> ISAC 同时承担单基地感知（MS）和双基地定位（BP）。现有方案大多假设几何静止、两者独立优化，忽视了用户移动性和不同阶段间的信息复用。</p>
+<p><strong>方法：</strong> 提出<strong>速度感知的序贯波束赋形</strong>框架：</p>
+<p>1. 推导<strong>位置域 CRB</strong>，把资源分配建成非凸优化；<br>2. 用<strong>序贯贝叶斯优化</strong>——先跑 MS 建立 UE 和被动目标 (PT) 的结构先验，再把协方差先验传给 UE 用以正则化 BP；<br>3. 关键设计是<strong>全局共享同一个波束赋形器</strong>横跨两个阶段，而非两阶段贪心。</p>
+<p><strong>结果：</strong> 仿真显示在有限符号资源下能给出 <strong>cm 级</strong> UE / PT 定位精度、鲁棒速度估计、显著降低计算开销，证明序贯共享设计相比贪心两阶段更优。属于 ISAC 资源调度方向的扎实理论工作。</p></div>
+    </section>
+  
+
+  
+    <section>
+      <h2>原始摘要</h2>
+      <p class="abstract">Integrated sensing and communication (ISAC) relies on monostatic sensing (MS) and bistatic positioning (BP) to enable comprehensive environmental awareness and user localization. However, existing frameworks predominantly assume static geometries and optimize these modalities independently, neglecting user mobility and sequential information sharing. In this paper, we propose a velocity-aware sequential beamforming framework that dynamically couples MS and BP in time. We derive the Cramer-Rao bounds (CRBs) in the position domain to formulate a non-convex resource allocation problem. Instead of relying on static weighted-sum tradeoffs, we introduce a sequential Bayesian optimization strategy where MS is executed first to construct a reliable structural prior on the UE and passive targets (PTs). This covariance prior is subsequently passed to the UE to regularize the BP estimation stage. We demonstrate that optimizing a single shared beamformer globally across both phases yields superior synergistic gains compared to a two-stage greedy approach. Simulation results validate that the shared sequential design efficiently balances limited symbol resources, achieving centimeter-level positioning accuracy for both the UE and PTs, robust velocity estimation, and a significantly reduced computational runtime.</p>
+    </section>
+  
+</article>
+
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <span>© 2026 DeepRedWang</span>
+    <span>· 由 Python 静态生成器自动构建</span>
+    <span>· 共 4 篇 / 2 期</span>
+  </div>
+</footer>
+
+<script src="/Sensing-News/assets/app.js" defer></script>
+</body>
+</html>

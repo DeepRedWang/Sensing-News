@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="auto">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Eff-WRFGS: Efficient Wireless Radiance Field Using 3D Gaussian Splatting · Wireless Sensing Paper Digest</title>
+<meta name="description" content="每日整理无线感知（Wireless Sensing）领域的最新论文，覆盖生理感知、定位、成像、安全等子方向。">
+<link rel="stylesheet" href="/Sensing-News/assets/style.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='80' font-size='80'%3E%F0%9F%93%A1%3C/text%3E%3C/svg%3E">
+</head>
+<body>
+<header class="site-header">
+  <div class="wrap header-inner">
+    <a class="brand" href="/Sensing-News/">
+      <span class="brand-icon">📡</span>
+      <span class="brand-text">Wireless Sensing Paper Digest</span>
+    </a>
+    <nav class="nav">
+      <a href="/Sensing-News/">首页</a>
+      
+        <a href="/Sensing-News/categories/physiological/">❤ 生理感知</a>
+      
+        <a href="/Sensing-News/categories/localization/">◎ 定位</a>
+      
+        <a href="/Sensing-News/categories/imaging/">▦ 成像</a>
+      
+        <a href="/Sensing-News/categories/security/">⚿ 安全</a>
+      
+      <a href="/Sensing-News/tags/">标签</a>
+      <a href="/Sensing-News/archive/">归档</a>
+      <a href="/Sensing-News/search/">搜索</a>
+    </nav>
+    <button id="theme-toggle" class="theme-toggle" aria-label="切换主题">◐</button>
+  </div>
+</header>
+
+<main class="wrap site-main">
+  
+<article class="paper-detail">
+  <nav class="crumbs">
+    <a href="/Sensing-News/">首页</a>
+    <span>›</span>
+    <a href="/Sensing-News/categories/imaging/">成像</a>
+    <span>›</span>
+    <span class="muted">arxiv-2605.15324</span>
+  </nav>
+
+  <h1 class="paper-detail-title">Eff-WRFGS: Efficient Wireless Radiance Field Using 3D Gaussian Splatting</h1>
+
+  <div class="paper-meta">
+    <span class="paper-cat cat-imaging">▦ 成像</span>
+    <span class="paper-venue">arXiv 2605.15324</span>
+    <span class="paper-date">2026-05-18</span>
+    <span class="paper-score score-6">6.8</span>
+  </div>
+
+  
+
+  
+    <div class="paper-tags">
+      <a class="tag" href="/Sensing-News/tags/csi/">CSI</a><a class="tag" href="/Sensing-News/tags/channel-modeling/">Channel Modeling</a><a class="tag" href="/Sensing-News/tags/wireless-radiance-field/">Wireless Radiance Field</a><a class="tag" href="/Sensing-News/tags/3d-gaussian-splatting/">3D Gaussian Splatting</a><a class="tag" href="/Sensing-News/tags/nerf/">NeRF²</a>
+    </div>
+  
+
+  <div class="paper-links">
+    <a class="link-btn" href="https://arxiv.org/abs/2605.15324" target="_blank" rel="noopener">arXiv</a>
+    <a class="link-btn" href="https://arxiv.org/pdf/2605.15324.pdf" target="_blank" rel="noopener">PDF</a>
+    
+    
+  </div>
+
+  
+    <div class="callout tldr-callout">
+      <div class="callout-title">TL;DR</div>
+      <p>把 3D Gaussian Splatting 引入 NeRF² 风格的无线辐射场建模，存储压缩 44×、渲染加速 7×。</p>
+    </div>
+  
+
+  
+    <section>
+      <h2>关键贡献</h2>
+      <ul class="highlights">
+        <li>首次将 3DGS 的剪枝/掩码机制用到无线辐射场</li><li>44× 存储压缩、7× 渲染加速，质量损失轻微</li><li>点云初始化进一步优化精度-效率折中</li>
+      </ul>
+    </section>
+  
+
+  
+    <section>
+      <h2>解读</h2>
+      <div class="summary"><p><strong>问题：</strong> 用神经辐射场（NeRF²）预测 CSI 跨空间分布可以省下大量 pilot 开销，但训练/推理代价高。</p>
+<p><strong>方法：</strong> 作者用 3D Gaussian Splatting (3DGS) 替代 MLP 体积表征，并对每个 Gaussian primitive 加一个<strong>可学习的重要性 mask</strong>做剪枝；通过 <em>渲染损失 + 正则损失</em> 的加权组合控制「精度-效率」权衡。再用场景 3D 点云初始化 Gaussian 进一步提升收敛质量。</p>
+<p><strong>结果：</strong> NeRF² 数据集上达成 <strong>44× 存储压缩</strong> + <strong>7× 渲染加速</strong>，质量只轻微退化。属于「把 CV 里的高效 3DGS 思路迁移到 RF 信道建模」的清晰工程贡献，对未来 ISAC / 数字孪生场景下的在线 CSI 推理很有价值。</p></div>
+    </section>
+  
+
+  
+    <section>
+      <h2>原始摘要</h2>
+      <p class="abstract">Wireless channel modeling is a key building block for next-generation wireless systems. Predicting the channel state information (CSI) across different transmitter locations can substantially reduce the pilot and feedback overhead of conventional channel estimation. We propose Eff-WRFGS, an efficient wireless radiance field modeling framework built upon 3D Gaussian Splatting. Eff-WRFGS introduces a learnable mask for each 3D Gaussian primitive to indicate its importance, which guides the pruning of less significant primitives for more efficient rendering. The model is trained using a weighted combination of rendering and regularization losses, allowing a flexible trade-off between rendering quality and efficiency. Numerical results on the NeRF² dataset demonstrate that Eff-WRFGS achieves up to 44× storage reduction and 7× rendering speed-up with only marginal quality degradation. Moreover, initializing the Gaussian primitives from a 3D point cloud of the scene further improves the entire quality-efficiency trade-off.</p>
+    </section>
+  
+</article>
+
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <span>© 2026 DeepRedWang</span>
+    <span>· 由 Python 静态生成器自动构建</span>
+    <span>· 共 4 篇 / 2 期</span>
+  </div>
+</footer>
+
+<script src="/Sensing-News/assets/app.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="auto">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dynamic and Open-Set RF Fingerprinting and Localization in Crowded Indoor Environments through Contrastive Channel State Information Learning · Wireless Sensing Paper Digest</title>
+<meta name="description" content="每日整理无线感知（Wireless Sensing）领域的最新论文，覆盖生理感知、定位、成像、安全等子方向。">
+<link rel="stylesheet" href="/Sensing-News/assets/style.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='80' font-size='80'%3E%F0%9F%93%A1%3C/text%3E%3C/svg%3E">
+</head>
+<body>
+<header class="site-header">
+  <div class="wrap header-inner">
+    <a class="brand" href="/Sensing-News/">
+      <span class="brand-icon">📡</span>
+      <span class="brand-text">Wireless Sensing Paper Digest</span>
+    </a>
+    <nav class="nav">
+      <a href="/Sensing-News/">首页</a>
+      
+        <a href="/Sensing-News/categories/physiological/">❤ 生理感知</a>
+      
+        <a href="/Sensing-News/categories/localization/">◎ 定位</a>
+      
+        <a href="/Sensing-News/categories/imaging/">▦ 成像</a>
+      
+        <a href="/Sensing-News/categories/security/">⚿ 安全</a>
+      
+      <a href="/Sensing-News/tags/">标签</a>
+      <a href="/Sensing-News/archive/">归档</a>
+      <a href="/Sensing-News/search/">搜索</a>
+    </nav>
+    <button id="theme-toggle" class="theme-toggle" aria-label="切换主题">◐</button>
+  </div>
+</header>
+
+<main class="wrap site-main">
+  
+<article class="paper-detail">
+  <nav class="crumbs">
+    <a href="/Sensing-News/">首页</a>
+    <span>›</span>
+    <a href="/Sensing-News/categories/security/">安全</a>
+    <span>›</span>
+    <span class="muted">arxiv-2605.15593</span>
+  </nav>
+
+  <h1 class="paper-detail-title">Dynamic and Open-Set RF Fingerprinting and Localization in Crowded Indoor Environments through Contrastive Channel State Information Learning</h1>
+
+  <div class="paper-meta">
+    <span class="paper-cat cat-security">⚿ 安全</span>
+    <span class="paper-venue">arXiv 2605.15593</span>
+    <span class="paper-date">2026-05-18</span>
+    <span class="paper-score score-7">7.6</span>
+  </div>
+
+  
+
+  
+    <div class="paper-tags">
+      <a class="tag" href="/Sensing-News/tags/wifi/">WiFi</a><a class="tag" href="/Sensing-News/tags/csi/">CSI</a><a class="tag" href="/Sensing-News/tags/rf-fingerprinting/">RF Fingerprinting</a><a class="tag" href="/Sensing-News/tags/authentication/">Authentication</a><a class="tag" href="/Sensing-News/tags/contrastive-learning/">Contrastive Learning</a><a class="tag" href="/Sensing-News/tags/esp32/">ESP32</a><a class="tag" href="/Sensing-News/tags/open-set/">Open-Set</a>
+    </div>
+  
+
+  <div class="paper-links">
+    <a class="link-btn" href="https://arxiv.org/abs/2605.15593" target="_blank" rel="noopener">arXiv</a>
+    <a class="link-btn" href="https://arxiv.org/pdf/2605.15593.pdf" target="_blank" rel="noopener">PDF</a>
+    
+    
+  </div>
+
+  
+    <div class="callout tldr-callout">
+      <div class="callout-title">TL;DR</div>
+      <p>用 CSI（而非 IQ）对比学习做 RF 指纹，在拥挤室内开放集场景识别 + 拒绝未注册设备。</p>
+    </div>
+  
+
+  
+    <section>
+      <h2>关键贡献</h2>
+      <ul class="highlights">
+        <li>用 CSI 而非 IQ 做 RFF，硬件门槛降到 ESP32 级别</li><li>开放集机制（GEM + CUSUM）能拒绝未注册设备</li><li>一套系统同时实现认证 + 定位</li>
+      </ul>
+    </section>
+  
+
+  
+    <section>
+      <h2>解读</h2>
+      <div class="summary"><p><strong>问题：</strong> RF 指纹（RFF）是抵抗 spoofing/replay/key-leak 的物理层认证手段，但传统做法依赖采集成本高的 IQ 采样，且大多是闭集（无法拒绝未注册设备）。</p>
+<p><strong>方法：</strong> 作者提出 <strong>ContraCSI</strong>，在 ESP32 上用 CSI 做对比学习 RFF：</p>
+<p>1. 三种 encoder（ViT / Lite3D-CNN / R3D18）对比，闭集场景 ViT 最佳；<br>2. 开放集认证用 <strong>GEM (Geometric Entropy Minimization)</strong> 异常分数 + <strong>CUSUM</strong> 序列检验，能拒绝未注册发射机；<br>3. 顺手把 CSI 做 trilateration 拓展到室内定位，形成「认证 + 定位」一体化。</p>
+<p><strong>结果：</strong> 在拥挤、人体走动、多径衰落的真实室内环境上展示高认证准确率和强泛化；用低成本 ESP32 把这套全链路跑通，工程价值显著。</p></div>
+    </section>
+  
+
+  
+    <section>
+      <h2>原始摘要</h2>
+      <p class="abstract">Radio Frequency Fingerprinting (RFF) using deep learning has gained attention as a complementary approach to cryptographic authentication, offering resistance to spoofing, replay attacks, and key leakage. While most RFF approaches rely on In-Phase and Quadrature (IQ) samples, Channel State Information (CSI) has emerged as a more accessible alternative, enabling device authentication through physical-layer characteristics. In this work, we propose ContraCSI, a CSI-based contrastive learning framework for RFF using low-cost ESP32 devices. We investigate multiple encoder backbones, including a Vision Transformer (ViT), a lightweight 3D-CNN (Lite3D-CNN), and R3D18, to learn joint CSI and device-ID embeddings for transmitter authentication. For closed-set identification, the ViT variants achieve the best overall performance. We further study open-set authentication by applying a Geometric Entropy Minimization (GEM)-based anomaly score and sequential CUSUM (Cumulative Sum) test on embeddings learned by Lite3D-CNN-Contra, enabling rejection of unseen or non-enrolled transmitters rather than forcing a closed-set label. To evaluate robustness in highly dynamic and crowded indoor environments with human motion, multipath fading, and varying device orientations and distances, we conduct extensive experiments in a real-world setting. Our results demonstrate high authentication accuracy, strong generalization in non-ideal conditions, and effective rejection of unknown transmitters. Additionally, we explore CSI-based indoor localization via trilateration, illustrating the potential for integrated authentication and localization in practical indoor deployments.</p>
+    </section>
+  
+</article>
+
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <span>© 2026 DeepRedWang</span>
+    <span>· 由 Python 静态生成器自动构建</span>
+    <span>· 共 4 篇 / 2 期</span>
+  </div>
+</footer>
+
+<script src="/Sensing-News/assets/app.js" defer></script>
+</body>
+</html>
