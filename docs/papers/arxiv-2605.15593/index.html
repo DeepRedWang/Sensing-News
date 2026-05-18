@@ -49,16 +49,18 @@
 
   <div class="paper-meta">
     <span class="paper-cat cat-security">⚿ 安全</span>
-    <span class="paper-venue">arXiv 2605.15593</span>
-    <span class="paper-date">2026-05-18</span>
-    <span class="paper-score score-7">7.6</span>
+    <span class="paper-venue">arXiv 2605.15593 (eess.SP)</span>
+    <span class="paper-date">2026-05-15</span>
+    <span class="paper-score score-7">7.8</span>
   </div>
 
+  
+    <p class="authors">Fawaz Abdul Razak, Yasin Yilmaz</p>
   
 
   
     <div class="paper-tags">
-      <a class="tag" href="/Sensing-News/tags/wifi/">WiFi</a><a class="tag" href="/Sensing-News/tags/csi/">CSI</a><a class="tag" href="/Sensing-News/tags/rf-fingerprinting/">RF Fingerprinting</a><a class="tag" href="/Sensing-News/tags/authentication/">Authentication</a><a class="tag" href="/Sensing-News/tags/contrastive-learning/">Contrastive Learning</a><a class="tag" href="/Sensing-News/tags/esp32/">ESP32</a><a class="tag" href="/Sensing-News/tags/open-set/">Open-Set</a>
+      <a class="tag" href="/Sensing-News/tags/wifi/">WiFi</a><a class="tag" href="/Sensing-News/tags/csi/">CSI</a><a class="tag" href="/Sensing-News/tags/rf-fingerprinting/">RF Fingerprinting</a><a class="tag" href="/Sensing-News/tags/device-authentication/">Device Authentication</a><a class="tag" href="/Sensing-News/tags/contrastive-learning/">Contrastive Learning</a><a class="tag" href="/Sensing-News/tags/vit/">ViT</a><a class="tag" href="/Sensing-News/tags/3d-cnn/">3D-CNN</a><a class="tag" href="/Sensing-News/tags/esp32/">ESP32</a><a class="tag" href="/Sensing-News/tags/open-set/">Open-Set</a><a class="tag" href="/Sensing-News/tags/gem/">GEM</a><a class="tag" href="/Sensing-News/tags/cusum/">CUSUM</a><a class="tag" href="/Sensing-News/tags/trilateration/">Trilateration</a><a class="tag" href="/Sensing-News/tags/indoor-localization/">Indoor Localization</a>
     </div>
   
 
@@ -72,7 +74,7 @@
   
     <div class="callout tldr-callout">
       <div class="callout-title">TL;DR</div>
-      <p>用 CSI（而非 IQ）对比学习做 RF 指纹，在拥挤室内开放集场景识别 + 拒绝未注册设备。</p>
+      <p>CSI 而非 IQ 做 RF 指纹：用 multi-positive 对比学习把 ESP32 CSI 嵌入和 MAC ID 嵌入对齐，外加 GEM+CUSUM 开放集检测器拒未注册设备。</p>
     </div>
   
 
@@ -80,7 +82,7 @@
     <section>
       <h2>关键贡献</h2>
       <ul class="highlights">
-        <li>用 CSI 而非 IQ 做 RFF，硬件门槛降到 ESP32 级别</li><li>开放集机制（GEM + CUSUM）能拒绝未注册设备</li><li>一套系统同时实现认证 + 定位</li>
+        <li>把 CSI-RFF 当作 CSI ↔ MAC-ID 的多正例对比对齐——比传统分类头在动态信道下稳定</li><li>GEM+CUSUM 序贯检测做开放集，拒绝未注册发射机（不只是把它们塞进 N+1 类）</li><li>完整在低成本 ESP32 + 真实公共建筑（≈300 人流）部署，一套系统认证+定位</li>
       </ul>
     </section>
   
@@ -88,17 +90,21 @@
   
     <section>
       <h2>解读</h2>
-      <div class="summary"><p><strong>问题：</strong> RF 指纹（RFF）是抵抗 spoofing/replay/key-leak 的物理层认证手段，但传统做法依赖采集成本高的 IQ 采样，且大多是闭集（无法拒绝未注册设备）。</p>
-<p><strong>方法：</strong> 作者提出 <strong>ContraCSI</strong>，在 ESP32 上用 CSI 做对比学习 RFF：</p>
-<p>1. 三种 encoder（ViT / Lite3D-CNN / R3D18）对比，闭集场景 ViT 最佳；<br>2. 开放集认证用 <strong>GEM (Geometric Entropy Minimization)</strong> 异常分数 + <strong>CUSUM</strong> 序列检验，能拒绝未注册发射机；<br>3. 顺手把 CSI 做 trilateration 拓展到室内定位，形成「认证 + 定位」一体化。</p>
-<p><strong>结果：</strong> 在拥挤、人体走动、多径衰落的真实室内环境上展示高认证准确率和强泛化；用低成本 ESP32 把这套全链路跑通，工程价值显著。</p></div>
+      <div class="summary"><p><strong>背景与问题</strong>：物联网设备指数级增长让<strong>抗 spoofing / replay / key-leak 的认证</strong>成刚需，密码学手段在轻量级 IoT 上又算不动。<strong>RF 指纹 (RFF)</strong> 利用硬件不可复制的瑕疵（DAC 非线性、PA 失配、LO 频偏等）做物理层身份认证。但 90% 的 RFF 工作依赖 IQ 采样、需要 SDR/NIC 这类专业硬件；<strong>CSI</strong> 在每个 WiFi 包里都有、<code>ESP32</code> 这种 5 美元 MCU 用开源工具就能拿到，是更现实的认证媒介。</p>
+<p><strong>现有方案的不足</strong>：(1) 大多数 CSI/IQ RFF 是<strong>静态评测</strong>——发射机和接收机位置在训测试间不变，模型实际学到的是位置依赖的信道因子 <code>h_k</code> 而非真实的器件指纹 <code>ψ_k</code>（CSI 模型 <code>Ĥ_k = h_k · ψ_k + ε_k</code>），换位置就崩；(2) <strong>Transformer / 3D-CNN 在 CSI-RFF 上几乎是空白</strong>，虽然 CSI 天然是 time-freq-feature 张量；(3) <strong>闭集假设普遍</strong>——把未注册的恶意发射机硬塞进 L 个已知类，无法拒绝。作者指出还没有任何工作<strong>同时</strong>做到「动态信道 + transformer/3DCNN + 开放集 + 公共建筑真实人流 + ESP32 硬件」。</p>
+<p><strong>核心方法（ContraCSI）</strong>：把 RFF 建成「<strong>CSI 嵌入空间 ↔ MAC-ID 嵌入空间」对齐</strong>问题：</p>
+<p>1. <strong>CSI encoder</strong> <code>f(X_i)</code>：输入 CSI 窗口 <code>X_i ∈ ℝ^{64×2×N}</code>（64 子载波 × 实/虚 × N 包）。三种 backbone 同台 PK：ViT-base（resize 到 224×224 复制成 3 通道）/ 轻量 3D-CNN（3 层 3×3×3 conv 直接吃 [B,1,N,64,2]）/ 改造 R3D18。输出 L2 归一化嵌入 <code>z^c_i</code>。<br>2. <strong>Label encoder</strong> <code>g(m_i)</code>：MAC 地址 → SHA-256 哈希 <code>φ_hex(m_i)</code>（确定性 base code）→ 可学线性投影 <code>W_mac</code> → L2 归一化得到 <code>z^ℓ_i</code>，与 CSI 嵌入在同维空间。<br>3. <strong>多正例监督对比损失</strong>：批内同 MAC 的多个样本<strong>都是正样本</strong>，避免 CLIP 单正例把同类推开的问题。损失对称由 row-wise (CSI→label) 和 column-wise (label→CSI) 平均：<br>   <code>L_{c→ℓ} = -(1/B)Σ log(Σ_{j∈P(i)} e^{S_ij} / Σ_{k≠i} e^{S_ik})</code><br>4. <strong>开放集检测</strong>：在 Lite3D-CNN 嵌入上跑 <strong>GEM (Geometric Entropy Minimization)</strong> 算异常分数，再用 <strong>序贯 CUSUM 检验</strong> 累积证据——超过阈值就判定非注册设备，否则交给闭集分类器。<br>5. <strong>顺手做定位</strong>：3 个 anchor 发射机 + CSI 距离估计 + 三边定位 (trilateration) 给出室内坐标 <code>(x̂_r, ŷ_r)</code>。</p>
+<figure class="md-figure"><img loading="lazy" src="figures/fig01-p03.png" alt="Figure 1: ContraCSI 架构——CSI 窗口经 ViT/3DCNN encoder 得到 z_c；MAC-ID 经 SHA-256 + 线性层得到 z_ℓ；两者点积形成相似度矩阵，对角是正例，多正例对比损失训练，推理取最大相似度类"><figcaption>Fig. 1. ContraCSI architecture. CSI windows are mapped by a ViT- or 3D CNN-based CSI encoder into CSI embeddings, while transmitter MAC-ID labels are converted by SHA-256 hashing and a learnable linear layer into label embeddings in the same space. Their pairwise similarities form a similarity matrix used to optimize a multi-positive contrastive loss.</figcaption></figure>
+<p><strong>实验设置</strong>：南佛罗里达大学的 <strong>Marshall Student Center</strong>（≈300 人自然走动的公共建筑）布 10 个 CSI 采集点，多日采集；ESP32 + lightweight CSI toolkit；对比闭集 baseline (单独分类器) 和开放集 baseline (prototype learning)。</p>
+<p><strong>关键结果</strong>：<br>- 闭集：ViT-Contra 在动态信道下显著优于 standalone 分类器；<br>- 开放集：Lite3D-CNN + GEM + CUSUM 能在保持高合法识别率的同时拒未注册设备；<br>- 多日 / 多位置 / 不同 SNR 下泛化稳定；<br>- 三边定位 demo 给出可接受的室内坐标误差，说明「同一套 CSI 流水线」可以认证 + 定位两用。</p>
+<p><strong>局限与可推广性</strong>：(1) 论文重点在系统设计与真实实验，未公开数字精度（论文里以图为主）；(2) 注册类数 L 增长后开放集阈值需要重新校准；(3) ESP32 子载波数只有 64，更高分辨率（Intel 5300/IWL 系列）能否进一步抬升精度未做。</p></div>
     </section>
   
 
   
     <section>
       <h2>原始摘要</h2>
-      <p class="abstract">Radio Frequency Fingerprinting (RFF) using deep learning has gained attention as a complementary approach to cryptographic authentication, offering resistance to spoofing, replay attacks, and key leakage. While most RFF approaches rely on In-Phase and Quadrature (IQ) samples, Channel State Information (CSI) has emerged as a more accessible alternative, enabling device authentication through physical-layer characteristics. In this work, we propose ContraCSI, a CSI-based contrastive learning framework for RFF using low-cost ESP32 devices. We investigate multiple encoder backbones, including a Vision Transformer (ViT), a lightweight 3D-CNN (Lite3D-CNN), and R3D18, to learn joint CSI and device-ID embeddings for transmitter authentication. For closed-set identification, the ViT variants achieve the best overall performance. We further study open-set authentication by applying a Geometric Entropy Minimization (GEM)-based anomaly score and sequential CUSUM (Cumulative Sum) test on embeddings learned by Lite3D-CNN-Contra, enabling rejection of unseen or non-enrolled transmitters rather than forcing a closed-set label. To evaluate robustness in highly dynamic and crowded indoor environments with human motion, multipath fading, and varying device orientations and distances, we conduct extensive experiments in a real-world setting. Our results demonstrate high authentication accuracy, strong generalization in non-ideal conditions, and effective rejection of unknown transmitters. Additionally, we explore CSI-based indoor localization via trilateration, illustrating the potential for integrated authentication and localization in practical indoor deployments.</p>
+      <p class="abstract">Radio Frequency Fingerprinting (RFF) using deep learning has gained attention as a complementary approach to cryptographic authentication, offering resistance to spoofing, replay attacks, and key leakage. While most RFF approaches rely on In-Phase and Quadrature (IQ) samples, Channel State Information (CSI) has emerged as a more accessible alternative, enabling device authentication through physical-layer characteristics. In this work, we propose ContraCSI, a CSI-based contrastive learning framework for RFF using low-cost ESP32 devices.</p>
     </section>
   
 </article>
@@ -109,7 +115,7 @@
   <div class="wrap">
     <span>© 2026 DeepRedWang</span>
     <span>· 由 Python 静态生成器自动构建</span>
-    <span>· 共 4 篇 / 2 期</span>
+    <span>· 共 4 篇 / 3 期</span>
   </div>
 </footer>
 

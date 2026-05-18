@@ -231,6 +231,33 @@ a:hover { color: var(--link-hover); text-decoration: underline; }
 .summary code { background: var(--bg-soft); padding: 1px 5px; border-radius: 3px; font-size: 0.92em; }
 .abstract { color: var(--fg-muted); font-style: italic; }
 
+/* 插图 */
+.md-figure {
+  margin: 1.2rem auto;
+  padding: 0;
+  text-align: center;
+  max-width: 100%;
+}
+.md-figure img {
+  max-width: 100%;
+  height: auto;
+  border-radius: var(--radius);
+  background: white;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+  display: block;
+  margin: 0 auto;
+}
+:root[data-theme="dark"] .md-figure img { background: #e9eaed; }
+@media (prefers-color-scheme: dark) {
+  :root[data-theme="auto"] .md-figure img { background: #e9eaed; }
+}
+.md-figure figcaption {
+  margin-top: 0.5rem;
+  color: var(--fg-muted);
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
+
 /* ============== 列表/归档/标签 ============== */
 .page-head { padding: 1rem 0 1.5rem; border-bottom: 1px solid var(--border); margin-bottom: 1.5rem; }
 .page-head h1 { margin: 0 0 0.5rem; }

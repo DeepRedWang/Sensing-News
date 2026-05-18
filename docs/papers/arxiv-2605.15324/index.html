@@ -49,16 +49,18 @@
 
   <div class="paper-meta">
     <span class="paper-cat cat-imaging">▦ 成像</span>
-    <span class="paper-venue">arXiv 2605.15324</span>
-    <span class="paper-date">2026-05-18</span>
-    <span class="paper-score score-6">6.8</span>
+    <span class="paper-venue">arXiv 2605.15324 (eess.SP)</span>
+    <span class="paper-date">2026-05-14</span>
+    <span class="paper-score score-7">7.0</span>
   </div>
 
+  
+    <p class="authors">Chenghong Bian, Meng Hua, Deniz Gündüz</p>
   
 
   
     <div class="paper-tags">
-      <a class="tag" href="/Sensing-News/tags/csi/">CSI</a><a class="tag" href="/Sensing-News/tags/channel-modeling/">Channel Modeling</a><a class="tag" href="/Sensing-News/tags/wireless-radiance-field/">Wireless Radiance Field</a><a class="tag" href="/Sensing-News/tags/3d-gaussian-splatting/">3D Gaussian Splatting</a><a class="tag" href="/Sensing-News/tags/nerf/">NeRF²</a>
+      <a class="tag" href="/Sensing-News/tags/csi/">CSI</a><a class="tag" href="/Sensing-News/tags/channel-modeling/">Channel Modeling</a><a class="tag" href="/Sensing-News/tags/wireless-radiance-field/">Wireless Radiance Field</a><a class="tag" href="/Sensing-News/tags/3d-gaussian-splatting/">3D Gaussian Splatting</a><a class="tag" href="/Sensing-News/tags/nerf/">NeRF²</a><a class="tag" href="/Sensing-News/tags/wrf-gs/">WRF-GS</a><a class="tag" href="/Sensing-News/tags/pruning/">Pruning</a><a class="tag" href="/Sensing-News/tags/straight-through-estimator/">Straight-Through Estimator</a><a class="tag" href="/Sensing-News/tags/ssim/">SSIM</a><a class="tag" href="/Sensing-News/tags/real-time/">Real-Time</a>
     </div>
   
 
@@ -72,7 +74,7 @@
   
     <div class="callout tldr-callout">
       <div class="callout-title">TL;DR</div>
-      <p>把 3D Gaussian Splatting 引入 NeRF² 风格的无线辐射场建模，存储压缩 44×、渲染加速 7×。</p>
+      <p>给 WRF-GS 的每个 3D Gaussian 配一个 STE-可学 mask 做剪枝 + 点云初始化，存储 44× 压缩、推理 7× 加速、SSIM 几乎不掉。</p>
     </div>
   
 
@@ -80,7 +82,7 @@
     <section>
       <h2>关键贡献</h2>
       <ul class="highlights">
-        <li>首次将 3DGS 的剪枝/掩码机制用到无线辐射场</li><li>44× 存储压缩、7× 渲染加速，质量损失轻微</li><li>点云初始化进一步优化精度-效率折中</li>
+        <li>给 WRF-GS 加 STE 可学 mask + 正则项，单参数 λ 就在「质量-效率」帕累托上滑</li><li>44× 存储压缩、7× 推理加速，SSIM 只掉 0.03——把 WRF 推近实时 CSI 推断</li><li>点云初始化把 Gaussian 中心和真实几何对齐（Chamfer 0.22 vs 7.51）</li>
       </ul>
     </section>
   
@@ -88,16 +90,21 @@
   
     <section>
       <h2>解读</h2>
-      <div class="summary"><p><strong>问题：</strong> 用神经辐射场（NeRF²）预测 CSI 跨空间分布可以省下大量 pilot 开销，但训练/推理代价高。</p>
-<p><strong>方法：</strong> 作者用 3D Gaussian Splatting (3DGS) 替代 MLP 体积表征，并对每个 Gaussian primitive 加一个<strong>可学习的重要性 mask</strong>做剪枝；通过 <em>渲染损失 + 正则损失</em> 的加权组合控制「精度-效率」权衡。再用场景 3D 点云初始化 Gaussian 进一步提升收敛质量。</p>
-<p><strong>结果：</strong> NeRF² 数据集上达成 <strong>44× 存储压缩</strong> + <strong>7× 渲染加速</strong>，质量只轻微退化。属于「把 CV 里的高效 3DGS 思路迁移到 RF 信道建模」的清晰工程贡献，对未来 ISAC / 数字孪生场景下的在线 CSI 推理很有价值。</p></div>
+      <div class="summary"><p><strong>背景与问题</strong>：未来 6G/ISAC 想用「无线辐射场」(Wireless Radiance Field, WRF) 在线推断<strong>任意收发位置的 CSI</strong>，从而省下 pilot/feedback 开销。最近的 NeRF² (MobiCom'23) 和 WRF-GS (TWC'26) 已经把 NeRF / 3D Gaussian Splatting 思路成功带入 RF 信道建模，但<strong>存储/推理太重</strong>——单场景轻松上 6 万个 Gaussian 原语，渲染延迟 0.2-7 秒，离实时还差好几个数量级。</p>
+<p><strong>现有方案的不足</strong>：(1) <strong>U-Net 风格 radio map</strong> 在散射体复杂时崩；(2) <strong>可微 ray-tracing</strong> 假设几何/材质已知、运行慢（7 秒/帧）；(3) <strong>NeRF²</strong> 沿每条射线密采样 + 多层 MLP 调用，重又慢；(4) <strong>WRF-GS</strong> 用 3D Gaussian 做 rasterization 已经把 NeRF² 加速到 0.2 秒，但 Gaussian 原语<strong>冗余度极高</strong>，CV 里 LightGaussian 之类的剪枝技术能不能搬到 RF 是空白。</p>
+<p><strong>核心方法（Eff-WRFGS）</strong>：作者把 WRF-GS pipeline 拆成三个改进：</p>
+<p>1. <strong>可学习重要性 mask</strong>：给每个 Gaussian <code>G_i</code> 加一个标量 <code>m_i</code>，<code>σ(m_i)</code> 作为重要性。渲染时按阈值 <code>ε</code> 二值化 <code>M_i = 𝟙[σ(m_i) &gt; ε]</code>，跳过 <code>M_i=0</code> 的原语；二值化通过 <strong>Straight-Through Estimator</strong> <code>M_i = sg(𝟙[σ(m_i)&gt;ε] − σ(m_i)) + σ(m_i)</code> 让梯度仍可回传。<br>2. <strong>正则化损失</strong>：<code>L_m = (1/N) Σ σ(m_i)</code>，鼓励整体保留比例下降；总损失 <code>L = L_render + λL_m</code> 中 <code>λ</code> 直接控制「质量-效率」帕累托。<br>3. <strong>点云初始化</strong>：用场景 3D 点云的点位 <code>x_i</code> 初始化 Gaussian 中心 <code>μ_i</code>，方差按最近邻距离设置，比随机初始化的 Chamfer 距离 <strong>0.22 vs 7.51</strong>——大幅改善与真实几何对齐。<br>4. <strong>三阶段训练</strong>：densification（建模能力）→ pruning（按 mask 周期性剪掉无用 Gaussian）→ fine-tuning（停剪，纯优化渲染质量）。</p>
+<figure class="md-figure"><img loading="lazy" src="figures/fig01-p03.png" alt="Figure 1: Eff-WRFGS 流程——点云初始化 → 形变块 D_Θ 接收 p_tx → Gaussian 参数 → Mercator 投影 → α-rendering，损失含渲染项和 σ(m_i) 正则项"><figcaption>Figure 1: The flowchart of the proposed Eff-WRFGS framework. The 3D Gaussian primitives are initialized using the geometry layout of the scene P. A deformation block D_Θ takes the transmitter location p_tx to achieve p_tx-dependent rendering. The masking operation enables efficient CSI prediction. The loss combines rendering and regularization terms.</figcaption></figure>
+<p><strong>实验设置</strong>：NeRF² 数据集，4898 训练 / 1225 测试样本，每条样本含一个空间频谱图 (360×90 像素) 和发射机位置 <code>p_tx</code>。共 2×10⁵ iteration（densification 2×10⁴ + pruning 2×10⁴ + finetune 1.6×10⁵）。指标 SSIM 衡量频谱重建质量，单条预测延迟在 RTX 1080 上测。对比 NeRF²、ray-tracing、WRF-GS (λ=0)。</p>
+<p><strong>关键结果</strong>：<br>- λ=0.02 时 Gaussian 数从 <strong>61466 → 1374（44× 压缩）</strong>，SSIM 仅掉 0.03；<br>- 延迟从 0.22s 降到 <strong>0.031s（7× 加速）</strong>，比 NeRF² 快 6.5×、比 ray-tracing 快 200+×；<br>- 点云初始化的 Pareto 前沿全面优于随机初始化；<br>- 极端 λ=0.04 只剩 24 个 Gaussian 时 SSIM 掉到 0.66，频谱重建明显糊掉——给出可用上界。</p>
+<p><strong>局限与可推广性</strong>：(1) 只跑了 NeRF² 数据集，未在 RF-3DGS 等其他 WRF benchmark 验证泛化；(2) 论文承认延迟在 N=1374 之后达到 floor（受 deformation MLP 主导），更激进的压缩需要把 deformation 也轻量化；(3) 论文未讨论室外/动态场景下点云初始化的可行性（需提前扫描）。</p></div>
     </section>
   
 
   
     <section>
       <h2>原始摘要</h2>
-      <p class="abstract">Wireless channel modeling is a key building block for next-generation wireless systems. Predicting the channel state information (CSI) across different transmitter locations can substantially reduce the pilot and feedback overhead of conventional channel estimation. We propose Eff-WRFGS, an efficient wireless radiance field modeling framework built upon 3D Gaussian Splatting. Eff-WRFGS introduces a learnable mask for each 3D Gaussian primitive to indicate its importance, which guides the pruning of less significant primitives for more efficient rendering. The model is trained using a weighted combination of rendering and regularization losses, allowing a flexible trade-off between rendering quality and efficiency. Numerical results on the NeRF² dataset demonstrate that Eff-WRFGS achieves up to 44× storage reduction and 7× rendering speed-up with only marginal quality degradation. Moreover, initializing the Gaussian primitives from a 3D point cloud of the scene further improves the entire quality-efficiency trade-off.</p>
+      <p class="abstract">Wireless channel modeling is a key building block for next-generation wireless systems. Predicting the channel state information (CSI) across different transmitter locations can substantially reduce the pilot and feedback overhead of conventional channel estimation. We propose Eff-WRFGS, an efficient wireless radiance field modeling framework built upon 3D Gaussian Splatting.</p>
     </section>
   
 </article>
@@ -108,7 +115,7 @@
   <div class="wrap">
     <span>© 2026 DeepRedWang</span>
     <span>· 由 Python 静态生成器自动构建</span>
-    <span>· 共 4 篇 / 2 期</span>
+    <span>· 共 4 篇 / 3 期</span>
   </div>
 </footer>
 

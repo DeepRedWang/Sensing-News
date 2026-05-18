@@ -49,9 +49,9 @@
 
   <div class="paper-meta">
     <span class="paper-cat cat-physiological">❤ 生理感知</span>
-    <span class="paper-venue">arXiv 2605.13233</span>
+    <span class="paper-venue">ICML 2026 (arXiv 2605.13233)</span>
     <span class="paper-date">2026-05-13</span>
-    <span class="paper-score score-7">7.2</span>
+    <span class="paper-score score-7">7.6</span>
   </div>
 
   
@@ -60,13 +60,13 @@
 
   
     <div class="paper-tags">
-      <a class="tag" href="/Sensing-News/tags/mmwave/">mmWave</a><a class="tag" href="/Sensing-News/tags/radar/">Radar</a><a class="tag" href="/Sensing-News/tags/pose-estimation/">Pose Estimation</a><a class="tag" href="/Sensing-News/tags/hpe/">HPE</a><a class="tag" href="/Sensing-News/tags/doppler/">Doppler</a><a class="tag" href="/Sensing-News/tags/human-sensing/">Human Sensing</a>
+      <a class="tag" href="/Sensing-News/tags/mmwave/">mmWave</a><a class="tag" href="/Sensing-News/tags/radar/">Radar</a><a class="tag" href="/Sensing-News/tags/human-pose-estimation/">Human Pose Estimation</a><a class="tag" href="/Sensing-News/tags/hpe/">HPE</a><a class="tag" href="/Sensing-News/tags/doppler/">Doppler</a><a class="tag" href="/Sensing-News/tags/fmcw/">FMCW</a><a class="tag" href="/Sensing-News/tags/transformer/">Transformer</a><a class="tag" href="/Sensing-News/tags/hupr/">HuPR</a><a class="tag" href="/Sensing-News/tags/xrf55/">XRF55</a><a class="tag" href="/Sensing-News/tags/cross-attention/">Cross-Attention</a><a class="tag" href="/Sensing-News/tags/temporal-stability/">Temporal Stability</a>
     </div>
   
 
   <div class="paper-links">
     <a class="link-btn" href="https://arxiv.org/abs/2605.13233" target="_blank" rel="noopener">arXiv</a>
-    <a class="link-btn" href="https://arxiv.org/pdf/2605.13233v1" target="_blank" rel="noopener">PDF</a>
+    <a class="link-btn" href="https://arxiv.org/pdf/2605.13233.pdf" target="_blank" rel="noopener">PDF</a>
     
     
   </div>
@@ -74,7 +74,7 @@
   
     <div class="callout tldr-callout">
       <div class="callout-title">TL;DR</div>
-      <p>把 mmWave Doppler 信号转换成带置信度的「动作 prompt」，先过滤再注入空间特征，显著稳定姿态预测。</p>
+      <p>把 Doppler 当作「过滤后的运动 prompt」单向注入到空间分支的注意力中，让单帧 mmWave 姿态预测稳过多帧基线。</p>
     </div>
   
 
@@ -82,7 +82,7 @@
     <section>
       <h2>关键贡献</h2>
       <ul class="highlights">
-        <li>把 Doppler 信号显式建模为带置信度的 motion prompt，而不是直接 concat 特征</li><li>先「过滤后注入」的两阶段范式抑制非人体运动干扰</li><li>在 3 个数据集（含多人场景）上同时提升姿态精度和时序稳定性</li>
+        <li>把 Doppler 从「对称特征」改成「被筛过的单向运动 prompt」——避免杂波被当成人体运动</li><li>通过局部邻域约束 + 置信度门控的 cross-attention，单帧版稳定性超过多帧 baseline</li><li>在 HuPR/XRF55/mmRadPose 三个数据集上 MPJVE 一致下降 16-28%，且不需要任何时序平滑</li>
       </ul>
     </section>
   
@@ -90,18 +90,21 @@
   
     <section>
       <h2>解读</h2>
-      <div class="summary"><p><strong>问题：</strong> mmWave 雷达做人体姿态估计 (HPE) 时，单帧表示为 range-angle-Doppler 张量。空间幅度信息适合定位身体部位，Doppler 维度则携带运动线索。现有方法要么没充分用 Doppler，要么和空间幅度<em>简单 concat</em>，忽视两者物理语义差异。结果非人体 Doppler（环境震动、风扇、走动其他物体）容易被误判成人体运动，让预测轨迹「抖」。</p>
-<p><strong>方法：</strong> 作者提出 <strong>PULSE</strong>，核心是把 Doppler 当作<em>motion prompt</em>处理：</p>
-<p>1. 先将 Doppler 张量编码为「置信度感知」的运动 prompt，每个 prompt 自带可信度分数；<br>2. 用一个 <em>screening</em> 步骤把可信度低的 prompt（疑似非人体杂讯）滤掉；<br>3. 把剩下的 prompt 通过受约束的注意力机制注入空间幅度分支去做最终关节回归。</p>
-<p>关键洞察：让 Doppler「作为外部线索辅助」、而不是直接当特征拼接，避免错误的运动谱污染主干。</p>
-<p><strong>结果：</strong> 在 3 个公开数据集（单人 + 多人）上，姿态精度和时序稳定性都一致提升，作者认为「受控的 Doppler prompting」是 mmWave HPE 一个有前景的工程方向。</p></div>
+      <div class="summary"><p><strong>背景与问题</strong>：mmWave 雷达做人体姿态估计 (HPE) 在隐私和光照鲁棒性上有天然优势——每帧 mmWave 数据是一个 range-angle-Doppler 张量 <code>H_t ∈ ℝ^{R×A×D}</code>，空间幅度 <code>(R,A)</code> 给定位、Doppler 谱 <code>D</code> 给瞬时运动。但下游应用如跌倒检测、康复跟踪要求<strong>逐帧准确 + 时序稳定</strong>，而当前 mmWave HPE 输出的姿态序列经常<strong>抖</strong>（jittery），把好预测拖累成不可用。</p>
+<p><strong>现有方案的不足</strong>：作者归纳出 3 类做法各有缺陷：(1) <strong>忽视 Doppler</strong>——只用空间幅度做点云/强度图，缺运动线索约束帧间一致性；(2) <strong>朴素融合</strong>——直接 concat 空间和 Doppler 特征，但 Doppler 里<strong>杂波、多径、硬件伪影</strong>的「假运动」被等同对待，反而注入噪声；(3) <strong>多帧聚合</strong>——靠时间窗滑动平滑，但对测试时序连续性有强假设，且本质没解决「局部 Doppler 不可靠」问题。</p>
+<p><strong>核心方法（PULSE）</strong>：作者重新定义 Doppler <strong>不是对称特征通道，而是被「筛过」的运动 prompt</strong>——一个 reliability-gated 的「可疑提示」，只在可信时影响空间推理。pipeline 含 3 个模块：</p>
+<p>1. <strong>双域表征</strong>：空间 <code>S_t[r,a] = (1/D)Σ_d|H_t[r,a,d]|</code> 沿 Doppler 平均；Doppler 谱 <code>v_{t,r,a} = V_t[r,a,:]</code> 逐 cell 保留。<br>2. <strong>运动置信门</strong>：每个 Doppler token 给一个 <code>g_{t,j} = σ(f_g(t^v_{t,j})) ∈ [0,1]</code> 的可信度，端到端学到。<br>3. <strong>条件 cross-attention</strong>：把 <code>g_{t,j}</code> 加进 attention 的 logit <code>α_{ij} ∝ exp((t^s_i W_Q)(t^v_{t,j} W_K)^⊤/√d_k + βg_{t,j})</code>，且 key/value <strong>只取 <code>(r,a)</code> 局部邻域 N(i) 内的 Doppler token</strong>——把跨区域谱泄漏挡掉。最后用残差 <code>t̃^s_i = t^s_i + λ_i c_i</code> 注入空间分支。多帧扩展只是把不同时刻的 Doppler token 用 <code>g^{(τ)}_j</code> 加权聚合，<strong>不动空间骨干</strong>。</p>
+<figure class="md-figure"><img loading="lazy" src="figures/fig04-p05.png" alt="Figure 4: PULSE 单帧版整体流程，(a) 双域特征构造 → (b1)(b2) 双域 tokenization → (c) 置信感知 Doppler prompting → (d) 姿态回归"><figcaption>Figure 4. Overview of PULSE's core modules (single-frame setting): (a) dual-domain feature construction; (b1) Spatial tokenization and (b2) Doppler tokenization; (c) controlled confidence-aware Doppler prompting; (d) pose regression.</figcaption></figure>
+<p><strong>实验设置</strong>：3 个公开数据集 (HuPR / XRF55 / mmRadPose，覆盖单人/多人/不同雷达)；对比 5 个 baseline 含单帧 HuPRModel / MvDoppler / RETR、多帧 mmDiff / milliMamba；4 个指标 <strong>MPJPE / PA-MPJPE / MPJVE（速度误差）/ AKV（关键点速度幅值）</strong>。多帧统一用 K=9 窗口。</p>
+<p><strong>关键结果</strong>：在 HuPR 上 PULSE 单帧 (1F) <strong>MPJVE=9.78</strong> vs 多帧 mmDiff 13.60（↓28%）和 milliMamba 11.69（↓16%）；MPJPE=60.57 比所有单/多帧 baseline 都低；PULSE 多帧 (KF) 进一步降到 MPJVE=8.16。XRF55 和 mmRadPose 上结论一致：<strong>单帧 PULSE 已超过多帧 baseline 的稳定性</strong>。多人评测 (XRF55) 也保持优势。</p>
+<p><strong>局限与可推广性</strong>：依赖完整 RAD 张量做输入（部分 4D 雷达数据集不适用）；置信门是从监督信号学到的「先验」而非校准过的信号质量；论文未做实时性 / 端侧推理开销的系统级评估。</p></div>
     </section>
   
 
   
     <section>
       <h2>原始摘要</h2>
-      <p class="abstract">Millimeter-wave (mmWave) enables privacy-preserving, illumination-robust human pose estimation (HPE), with each mmWave frame represented as a range-angle-Doppler tensor, providing spatial magnitude for localization and Doppler signatures for motion-related cues. However, existing mmWave-based HPE methods either underutilize or naïvely fuse Doppler signatures with spatial magnitude, disregarding their distinct physical semantics. As a result, non-human Doppler signatures can be misinterpreted as human motion cues, leading to jittery trajectories. We propose PULSE, which converts Doppler signatures into confidence-aware motion prompts and injects them into spatial magnitude reasoning through constrained interactions. By screening Doppler prompts before they influence prediction, PULSE first suppresses spurious spectral motion cues and then uses the screened prompts to stabilize prediction. Across three datasets spanning single- and multi-person settings, PULSE consistently improves pose accuracy and temporal stability, indicating that controlled Doppler prompting is a practical direction for stable mmWave HPE.</p>
+      <p class="abstract">Millimeter-wave (mmWave) enables privacy-preserving, illumination-robust human pose estimation (HPE), with each mmWave frame represented as a range-angle-Doppler tensor, providing spatial magnitude for localization and Doppler signatures for motion-related cues. However, existing mmWave-based HPE methods either underutilize or naïvely fuse Doppler signatures with spatial magnitude, disregarding their distinct physical semantics. As a result, non-human Doppler signatures can be misinterpreted as human motion cues, leading to jittery trajectories. We propose PULSE, which converts Doppler signatures into confidence-aware motion prompts and injects them into spatial magnitude reasoning through constrained interactions. By screening Doppler prompts before they influence prediction, PULSE first suppresses spurious spectral motion cues and then uses the screened prompts to stabilize prediction.</p>
     </section>
   
 </article>
@@ -112,7 +115,7 @@
   <div class="wrap">
     <span>© 2026 DeepRedWang</span>
     <span>· 由 Python 静态生成器自动构建</span>
-    <span>· 共 4 篇 / 2 期</span>
+    <span>· 共 4 篇 / 3 期</span>
   </div>
 </footer>
 

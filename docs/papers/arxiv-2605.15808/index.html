@@ -49,16 +49,18 @@
 
   <div class="paper-meta">
     <span class="paper-cat cat-localization">◎ 定位</span>
-    <span class="paper-venue">arXiv 2605.15808</span>
-    <span class="paper-date">2026-05-18</span>
-    <span class="paper-score score-7">7.0</span>
+    <span class="paper-venue">arXiv 2605.15808 (eess.SP)</span>
+    <span class="paper-date">2026-05-15</span>
+    <span class="paper-score score-7">7.4</span>
   </div>
 
+  
+    <p class="authors">Aymen Hamrouni, Sofie Pollin, Hazem Sallouha</p>
   
 
   
     <div class="paper-tags">
-      <a class="tag" href="/Sensing-News/tags/isac/">ISAC</a><a class="tag" href="/Sensing-News/tags/beamforming/">Beamforming</a><a class="tag" href="/Sensing-News/tags/positioning/">Positioning</a><a class="tag" href="/Sensing-News/tags/cramer-rao-bound/">Cramer-Rao Bound</a><a class="tag" href="/Sensing-News/tags/bayesian-optimization/">Bayesian Optimization</a><a class="tag" href="/Sensing-News/tags/mobile/">Mobile</a>
+      <a class="tag" href="/Sensing-News/tags/isac/">ISAC</a><a class="tag" href="/Sensing-News/tags/monostatic-sensing/">Monostatic Sensing</a><a class="tag" href="/Sensing-News/tags/bistatic-positioning/">Bistatic Positioning</a><a class="tag" href="/Sensing-News/tags/beamforming/">Beamforming</a><a class="tag" href="/Sensing-News/tags/cramer-rao-bound/">Cramer-Rao Bound</a><a class="tag" href="/Sensing-News/tags/bayesian-optimization/">Bayesian Optimization</a><a class="tag" href="/Sensing-News/tags/mmwave-mimo/">mmWave MIMO</a><a class="tag" href="/Sensing-News/tags/ofdm/">OFDM</a><a class="tag" href="/Sensing-News/tags/velocity-estimation/">Velocity Estimation</a><a class="tag" href="/Sensing-News/tags/mobile-ue/">Mobile UE</a><a class="tag" href="/Sensing-News/tags/peb/">PEB</a><a class="tag" href="/Sensing-News/tags/veb/">VEB</a>
     </div>
   
 
@@ -72,7 +74,7 @@
   
     <div class="callout tldr-callout">
       <div class="callout-title">TL;DR</div>
-      <p>针对移动用户的 ISAC 序贯波束赋形：先做单基地感知建立先验，再用于双基地定位，cm 级精度。</p>
+      <p>ISAC 里把单基地感知 (MS) 当作双基地定位 (BP) 的「贝叶斯先验提供者」——先 MS 估 UE 和被动目标的协方差，再传给 BP 阶段做正则化，单个共享 beamformer 全局优化。</p>
     </div>
   
 
@@ -80,7 +82,7 @@
     <section>
       <h2>关键贡献</h2>
       <ul class="highlights">
-        <li>首个把用户移动性显式纳入 ISAC 序贯优化的框架</li><li>位置域 CRB + 贝叶斯先验传递的解析公式</li><li>共享波束赋形器全局优化优于两阶段贪心</li>
+        <li>首个把 UE 移动性 (velocity) 显式纳入 ISAC 序贯波束设计的 CRB 优化框架</li><li>MS → BP 协方差传递做贝叶斯先验，比两阶段独立优化捕捉到「信息耦合」</li><li>理论 + 仿真证明：单个共享 beamformer 跨两阶段全局优化 &gt; 两阶段分别贪心</li>
       </ul>
     </section>
   
@@ -88,17 +90,21 @@
   
     <section>
       <h2>解读</h2>
-      <div class="summary"><p><strong>问题：</strong> ISAC 同时承担单基地感知（MS）和双基地定位（BP）。现有方案大多假设几何静止、两者独立优化，忽视了用户移动性和不同阶段间的信息复用。</p>
-<p><strong>方法：</strong> 提出<strong>速度感知的序贯波束赋形</strong>框架：</p>
-<p>1. 推导<strong>位置域 CRB</strong>，把资源分配建成非凸优化；<br>2. 用<strong>序贯贝叶斯优化</strong>——先跑 MS 建立 UE 和被动目标 (PT) 的结构先验，再把协方差先验传给 UE 用以正则化 BP；<br>3. 关键设计是<strong>全局共享同一个波束赋形器</strong>横跨两个阶段，而非两阶段贪心。</p>
-<p><strong>结果：</strong> 仿真显示在有限符号资源下能给出 <strong>cm 级</strong> UE / PT 定位精度、鲁棒速度估计、显著降低计算开销，证明序贯共享设计相比贪心两阶段更优。属于 ISAC 资源调度方向的扎实理论工作。</p></div>
+      <div class="summary"><p><strong>背景与问题</strong>：6G ISAC 范式里，<strong>单基地感知 (Monostatic Sensing, MS)</strong> 用 BS 的同址发射/接收阵列分析回波，擅长被动目标 (Passive Target, PT) 检测；<strong>双基地定位 (Bistatic Positioning, BP)</strong> 用 BS-UE 的空间分离链路让 UE 估计自身位置/速度，几何分散度更高定位更准。一个典型场景是 GPS-拒止的城市峡谷里<strong>自动驾驶车辆 (UE) + 行人/障碍 (PTs)</strong>：MS 帮 BS 看清环境、BP 让车辆得到无漂移的绝对位姿。但两个任务<strong>抢同一波束/同一段符号资源</strong>。</p>
+<p><strong>现有方案的不足</strong>：(1) <strong>几何静态</strong>——绝大多数 ISAC 资源分配工作把 UE 当成静止，忽略真实场景下 UE 移动（28GHz 高速车辆 CPI 只有 ~100μs），抛弃了 Doppler 这块巨大信息；(2) <strong>加权和折中</strong>——Zhang 等 (TWC'25) 把 BP/MS CRB 加权和做多目标优化，是一种<strong>贪心两阶段</strong>思路，本质上等于把能量在两个阶段重新分配，没利用先后阶段的<strong>协方差信息传递</strong>；(3) <strong>滤波层融合</strong>（Ge 等 EKF）在波束设计层不优化，能耗利用率有限。</p>
+<p><strong>核心方法</strong>：作者提出<strong>速度感知的序贯波束赋形</strong>框架，关键有 3 步：</p>
+<p>1. <strong>位置域 CRB 推导</strong>：在 mmWave MIMO-OFDM 模型下推出 BP 和 MS 各自的 FIM（Slepian-Bangs 公式），用 Jacobian 把 delay/angle/Doppler 通道参数映射到 2D 位置 + 2D 速度域。给出约束「固定能量预算」下的非凸资源分配问题。<br>2. <strong>序贯贝叶斯优化</strong>：MS 先跑，输出 UE 和 PT 的位置先验<strong>协方差矩阵</strong>；这份协方差传到 BP 阶段作为 prior 正则化。这个顺序至关重要——单独 BP 估 PT 时几何多样性不足且受 clock bias 这种 nuisance 干扰，加了 MS 协方差先验后才能联合估 PT + 精修 UE 位置。<br>3. <strong>共享 vs 分离 beamformer</strong>：作者证明<strong>全局优化同一个 beamformer 跨两阶段</strong> &gt; <strong>两阶段各贪心一个 beamformer</strong>——因为「相同照射模式同时强化 MS 后验和 BP 似然」，分开就把能量稀释了。再加一个<strong>自适应时间分配策略</strong>控制两阶段符号比例。</p>
+<figure class="md-figure"><img loading="lazy" src="figures/fig01-p01.png" alt="Figure 1: 城市峡谷场景下 BS 同时执行 MS（橙虚线，照向 UE 和 PT₁/PT₂）和 BP（蓝虚线，BS → UE 下行）；UE 处理下行做自定位与速度估计"><figcaption>Fig. 1. Illustration of MS and BP in an urban canyon scenario. The BS simultaneously performs i) MS (orange dotted lines) to detect UE and PTs (e.g., stationary cars) and ii) BP (blue dashed lines) to enable localization and velocity estimation for the mobile UE.</figcaption></figure>
+<p><strong>实验设置</strong>：仿真，28 GHz mmWave MIMO-OFDM，UE 速度 5-50 m/s 多场景；200 次 Monte Carlo（随机 UE/PT 位置 [5,100]m）；指标 <strong>PEB (Position Error Bound, cm)</strong> 和 <strong>VEB (Velocity Error Bound, cm/s)</strong>（log scale）。对比 4 种波束策略：full-MS、full-BP、shared sequential、separate sequential。还分别评估 Snapshot MS（两个时刻位置差分推速度）和 Extended MS（用 Doppler 联合估 radial+tangential）。</p>
+<p><strong>关键结果</strong>：<br>- BP 在 PT≥2 后位置精度反超 MS，因为多 PT 提供几何多样性解开同步参数；MS 的 PEB 反而随 PT 增加变差（能量被多波束摊薄）；<br>- 高速场景下 Snapshot/Extended MS 的 VEB 随速度恶化（CPI 内 Doppler 旋转太快有效观测变少）；<br>- <strong>共享 sequential beamformer 全面优于分离 sequential</strong>——共同照射模式让 MS 先验和 BP 似然同向强化；<br>- 综合下来达成 cm 级 UE/PT 位置精度 + 鲁棒速度估计 + 显著低于贪心两阶段的计算开销。</p>
+<p><strong>局限与可推广性</strong>：(1) 纯仿真，未做硬件原型；(2) 假设 channel-domain FIM 对角（参数间无耦合），需要大孔径阵列 + 高带宽支撑；(3) 高速移动 (UAV 50m/s @ 60GHz) 场景下 CPI 只有 50μs，论文未充分探索资源是否还够支持序贯执行。</p></div>
     </section>
   
 
   
     <section>
       <h2>原始摘要</h2>
-      <p class="abstract">Integrated sensing and communication (ISAC) relies on monostatic sensing (MS) and bistatic positioning (BP) to enable comprehensive environmental awareness and user localization. However, existing frameworks predominantly assume static geometries and optimize these modalities independently, neglecting user mobility and sequential information sharing. In this paper, we propose a velocity-aware sequential beamforming framework that dynamically couples MS and BP in time. We derive the Cramer-Rao bounds (CRBs) in the position domain to formulate a non-convex resource allocation problem. Instead of relying on static weighted-sum tradeoffs, we introduce a sequential Bayesian optimization strategy where MS is executed first to construct a reliable structural prior on the UE and passive targets (PTs). This covariance prior is subsequently passed to the UE to regularize the BP estimation stage. We demonstrate that optimizing a single shared beamformer globally across both phases yields superior synergistic gains compared to a two-stage greedy approach. Simulation results validate that the shared sequential design efficiently balances limited symbol resources, achieving centimeter-level positioning accuracy for both the UE and PTs, robust velocity estimation, and a significantly reduced computational runtime.</p>
+      <p class="abstract">Integrated sensing and communication (ISAC) relies on monostatic sensing (MS) and bistatic positioning (BP) to enable comprehensive environmental awareness and user localization. However, existing frameworks predominantly assume static geometries and optimize these modalities independently, neglecting user mobility and sequential information sharing. In this paper, we propose a velocity-aware sequential beamforming framework that dynamically couples MS and BP in time.</p>
     </section>
   
 </article>
@@ -109,7 +115,7 @@
   <div class="wrap">
     <span>© 2026 DeepRedWang</span>
     <span>· 由 Python 静态生成器自动构建</span>
-    <span>· 共 4 篇 / 2 期</span>
+    <span>· 共 4 篇 / 3 期</span>
   </div>
 </footer>
 
