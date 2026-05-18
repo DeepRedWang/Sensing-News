@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="auto">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Doppler Prompting for Stable mmWave-based Human Pose Estimation · Wireless Sensing Paper Digest</title>
+<meta name="description" content="每日整理无线感知（Wireless Sensing）领域的最新论文，覆盖生理感知、定位、成像、安全等子方向。">
+<link rel="stylesheet" href="/Sensing-News/assets/style.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='80' font-size='80'%3E%F0%9F%93%A1%3C/text%3E%3C/svg%3E">
+</head>
+<body>
+<header class="site-header">
+  <div class="wrap header-inner">
+    <a class="brand" href="/Sensing-News/">
+      <span class="brand-icon">📡</span>
+      <span class="brand-text">Wireless Sensing Paper Digest</span>
+    </a>
+    <nav class="nav">
+      <a href="/Sensing-News/">首页</a>
+      
+        <a href="/Sensing-News/categories/physiological/">❤ 生理感知</a>
+      
+        <a href="/Sensing-News/categories/localization/">◎ 定位</a>
+      
+        <a href="/Sensing-News/categories/imaging/">▦ 成像</a>
+      
+        <a href="/Sensing-News/categories/security/">⚿ 安全</a>
+      
+      <a href="/Sensing-News/tags/">标签</a>
+      <a href="/Sensing-News/archive/">归档</a>
+      <a href="/Sensing-News/search/">搜索</a>
+    </nav>
+    <button id="theme-toggle" class="theme-toggle" aria-label="切换主题">◐</button>
+  </div>
+</header>
+
+<main class="wrap site-main">
+  
+<article class="paper-detail">
+  <nav class="crumbs">
+    <a href="/Sensing-News/">首页</a>
+    <span>›</span>
+    <a href="/Sensing-News/categories/physiological/">生理感知</a>
+    <span>›</span>
+    <span class="muted">arxiv-2605.13233</span>
+  </nav>
+
+  <h1 class="paper-detail-title">Doppler Prompting for Stable mmWave-based Human Pose Estimation</h1>
+
+  <div class="paper-meta">
+    <span class="paper-cat cat-physiological">❤ 生理感知</span>
+    <span class="paper-venue">arXiv 2605.13233</span>
+    <span class="paper-date">2026-05-13</span>
+    <span class="paper-score score-7">7.2</span>
+  </div>
+
+  
+    <p class="authors">Shuntian Zheng, Jiaqi Li, Xiaoman Lu, Shuai He, Yu Guan</p>
+  
+
+  
+    <div class="paper-tags">
+      <a class="tag" href="/Sensing-News/tags/mmwave/">mmWave</a><a class="tag" href="/Sensing-News/tags/radar/">Radar</a><a class="tag" href="/Sensing-News/tags/pose-estimation/">Pose Estimation</a><a class="tag" href="/Sensing-News/tags/hpe/">HPE</a><a class="tag" href="/Sensing-News/tags/doppler/">Doppler</a><a class="tag" href="/Sensing-News/tags/human-sensing/">Human Sensing</a>
+    </div>
+  
+
+  <div class="paper-links">
+    <a class="link-btn" href="https://arxiv.org/abs/2605.13233" target="_blank" rel="noopener">arXiv</a>
+    <a class="link-btn" href="https://arxiv.org/pdf/2605.13233v1" target="_blank" rel="noopener">PDF</a>
+    
+    
+  </div>
+
+  
+    <div class="callout tldr-callout">
+      <div class="callout-title">TL;DR</div>
+      <p>把 mmWave Doppler 信号转换成带置信度的「动作 prompt」，先过滤再注入空间特征，显著稳定姿态预测。</p>
+    </div>
+  
+
+  
+    <section>
+      <h2>关键贡献</h2>
+      <ul class="highlights">
+        <li>把 Doppler 信号显式建模为带置信度的 motion prompt，而不是直接 concat 特征</li><li>先「过滤后注入」的两阶段范式抑制非人体运动干扰</li><li>在 3 个数据集（含多人场景）上同时提升姿态精度和时序稳定性</li>
+      </ul>
+    </section>
+  
+
+  
+    <section>
+      <h2>解读</h2>
+      <div class="summary"><p><strong>问题：</strong> mmWave 雷达做人体姿态估计 (HPE) 时，单帧表示为 range-angle-Doppler 张量。空间幅度信息适合定位身体部位，Doppler 维度则携带运动线索。现有方法要么没充分用 Doppler，要么和空间幅度<em>简单 concat</em>，忽视两者物理语义差异。结果非人体 Doppler（环境震动、风扇、走动其他物体）容易被误判成人体运动，让预测轨迹「抖」。</p>
+<p><strong>方法：</strong> 作者提出 <strong>PULSE</strong>，核心是把 Doppler 当作<em>motion prompt</em>处理：</p>
+<p>1. 先将 Doppler 张量编码为「置信度感知」的运动 prompt，每个 prompt 自带可信度分数；<br>2. 用一个 <em>screening</em> 步骤把可信度低的 prompt（疑似非人体杂讯）滤掉；<br>3. 把剩下的 prompt 通过受约束的注意力机制注入空间幅度分支去做最终关节回归。</p>
+<p>关键洞察：让 Doppler「作为外部线索辅助」、而不是直接当特征拼接，避免错误的运动谱污染主干。</p>
+<p><strong>结果：</strong> 在 3 个公开数据集（单人 + 多人）上，姿态精度和时序稳定性都一致提升，作者认为「受控的 Doppler prompting」是 mmWave HPE 一个有前景的工程方向。</p></div>
+    </section>
+  
+
+  
+    <section>
+      <h2>原始摘要</h2>
+      <p class="abstract">Millimeter-wave (mmWave) enables privacy-preserving, illumination-robust human pose estimation (HPE), with each mmWave frame represented as a range-angle-Doppler tensor, providing spatial magnitude for localization and Doppler signatures for motion-related cues. However, existing mmWave-based HPE methods either underutilize or naïvely fuse Doppler signatures with spatial magnitude, disregarding their distinct physical semantics. As a result, non-human Doppler signatures can be misinterpreted as human motion cues, leading to jittery trajectories. We propose PULSE, which converts Doppler signatures into confidence-aware motion prompts and injects them into spatial magnitude reasoning through constrained interactions. By screening Doppler prompts before they influence prediction, PULSE first suppresses spurious spectral motion cues and then uses the screened prompts to stabilize prediction. Across three datasets spanning single- and multi-person settings, PULSE consistently improves pose accuracy and temporal stability, indicating that controlled Doppler prompting is a practical direction for stable mmWave HPE.</p>
+    </section>
+  
+</article>
+
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <span>© 2026 DeepRedWang</span>
+    <span>· 由 Python 静态生成器自动构建</span>
+    <span>· 共 1 篇 / 1 期</span>
+  </div>
+</footer>
+
+<script src="/Sensing-News/assets/app.js" defer></script>
+</body>
+</html>
